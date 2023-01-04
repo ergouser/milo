@@ -16,12 +16,22 @@ import java.util.Optional;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.jetbrains.annotations.Nullable;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>> implements AccessContext {
 
     private final Session session;
     private final DiagnosticsContext<T> diagnosticsContext;
+
+    private final String auditEntryId;
+
+    private final UInteger timeoutHint;
+
+    private final ExtensionObject additionalHeader;
 
     public ServiceOperationContext(
         OpcUaServer server,
@@ -30,17 +40,31 @@ public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>
 
         this(server, session, new DiagnosticsContext<>());
     }
-
+    
     public ServiceOperationContext(
         OpcUaServer server,
         @Nullable Session session,
         DiagnosticsContext<T> diagnosticsContext
+   ) {
+        this(server, session, diagnosticsContext, "", uint(0), null);
+    }
+
+    public ServiceOperationContext(
+        OpcUaServer server,
+        @Nullable Session session,
+        DiagnosticsContext<T> diagnosticsContext,
+        @Nullable String auditEntryId,
+        UInteger timeoutHint,
+        ExtensionObject additionalHeader
     ) {
 
         super(server);
 
         this.session = session;
         this.diagnosticsContext = diagnosticsContext;
+        this.auditEntryId = auditEntryId;
+        this.timeoutHint = timeoutHint;
+        this.additionalHeader = additionalHeader;
     }
 
     /**
@@ -53,6 +77,18 @@ public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>
 
     public DiagnosticsContext<T> getDiagnosticsContext() {
         return diagnosticsContext;
+    }
+
+    public @Nullable String getAuditEntryId() {
+        return auditEntryId;
+    }
+
+    public UInteger getTimeoutHint() {
+        return timeoutHint;
+    }
+
+    public ExtensionObject getAdditionalHeader() {
+        return additionalHeader;
     }
 
 }

@@ -72,7 +72,10 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
         HistoryReadContext context = new HistoryReadContext(
             server,
             session,
-            diagnosticsContext
+            diagnosticsContext,
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
         );
 
         HistoryReadDetails details = (HistoryReadDetails) request.getHistoryReadDetails().decode(
@@ -132,8 +135,11 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
         HistoryUpdateContext context = new HistoryUpdateContext(
             server,
             session,
-            diagnosticsContext
-        );
+            diagnosticsContext,
+            request.getRequestHeader().getAuditEntryId(),
+            request.getRequestHeader().getTimeoutHint(),
+            request.getRequestHeader().getAdditionalHeader()
+       );
 
         server.getAddressSpaceManager().historyUpdate(context, historyUpdateDetailsList);
 
